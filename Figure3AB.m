@@ -8,7 +8,7 @@ IMaxVals = [1.1 1.8 2 3];
 nI = 4; 
 
 % Number of random initial conditions
-nIC =   10;    
+nIC =   20;    
 
 % Container storing number of spikes of each trajectory
 v1Int = zeros(nI,nIC);           
@@ -21,13 +21,13 @@ plotHistograms = true;
 for i = 1:length(IMaxVals)     % For each input current values...
 
     %% Random initial conditions
-    vrand = 0.01;             % Uniform distribution width
+    vrand = 0.05;             % Uniform distribution width
     ICVals = vrand*[rand(1,nIC); rand(1,nIC); rand(1,nIC); rand(1,nIC); rand(1,nIC); rand(1,nIC)];
     
     for ik = 1:nIC    % For each (random) initial condition
 
         %% External inputs (as a vector)  
-        I1fun = @(t) (t<=500).*IMaxVals(i);
+        I1fun = @(t) (t>30 & t<=500).*IMaxVals(i);
         I = @(t) [I1fun(t); 0*t; 0*t; 0*t; 0*t; 0*t];       %Applied current (only) in V1
 
         %% Connectivity matrices
@@ -67,9 +67,14 @@ for i = 1:length(IMaxVals)     % For each input current values...
         %% Right-hand side
         F = @(t,u)(-beta.*u + S(W*u + I(t)))./tau;
 
+            
         %% Time step
+        u0 = [0. 0. 0. 0. 0. 0.];
+        tSpan = [-50 0];
+        [t,U] = ode23s(F,tSpan,u0);
+    
         tSpan = [0:1:1500];
-        [t,U] = ode23s(F,tSpan, ICVals(:,ik));
+        [t,U] = ode23s(F,tSpan,U(end,:)' + ICVals(:,ik));   % add noise
 
         %% Integral of V1E between t0 and 150
         t0 = 250;                    

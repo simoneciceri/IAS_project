@@ -23,7 +23,7 @@ plotHistograms = false;
 for i = 1:length(IMaxVals)      % For each input current values...
 
     %% Random initial conditions
-    vrand = 0.01;             % Uniform distribution width
+    vrand = 0.05;             % Uniform distribution width
     ICVals = vrand*[rand(1,nIC); rand(1,nIC); rand(1,nIC); rand(1,nIC); rand(1,nIC); rand(1,nIC)];
     
     if plotTrajectories 
@@ -33,7 +33,7 @@ for i = 1:length(IMaxVals)      % For each input current values...
     for ik = 1:length(ICVals)   % For each (random) initial condition
 
         %% External inputs (as a vector)  
-        I1fun = @(t) (t<=500).*IMaxVals(i);
+        I1fun = @(t) (t>30 & t<=500).*IMaxVals(i);
         I = @(t) [I1fun(t); 0*t; 0*t; 0*t; 0*t; 0*t];       %Applied current (only) in V1
 
         %% Connectivity matrices
@@ -74,8 +74,12 @@ for i = 1:length(IMaxVals)      % For each input current values...
         F = @(t,u)(-beta.*u + S(W*u + I(t)))./tau;
 
         %% Time step
+        u0 = [0. 0. 0. 0. 0. 0.];
+        tSpan = [-50 0];
+        [t,U] = ode23s(F,tSpan,u0);
+    
         tSpan = [0:1:1500];
-        [t,U] = ode23s(F,tSpan, ICVals(:,ik));
+        [t,U] = ode23s(F,tSpan,U(end,:)' + ICVals(:,ik));   % add noise
 
         %% Integral of V1E between t0 and 150
         t0 = 250;                    
@@ -111,9 +115,6 @@ y = linspace( 0 , max(v1Int, [], 'all')+0.05, n_bins);
 for i = 1:length(IMaxVals)
     figure(3);
     h = histogram(v1Int(i,:), y);
-    if not(plotHistograms)
-        figure('doublebuffer','off','Visible','Off');
-    end
     z(:, i) = h.Values;
 end
 y(end) = [];
@@ -132,4 +133,7 @@ colormap(flipud(gray));
 colorbar;
 drawnow;
 hold off;
- 
+
+if not(plotHistograms)
+    close(figure(3));
+end
