@@ -70,8 +70,8 @@ for i = 1:length(IMaxVals)     % For each input current values...
             
         %% Time step
         u0 = [0. 0. 0. 0. 0. 0.];
-        tSpan = [-50 0];
-        [t,U] = ode23s(F,tSpan,u0);
+        tSpan = [-500 0];
+        [t,U] = ode23s(F,tSpan,u0);                         % condense to a steady state
     
         tSpan = [0:1:1500];
         [t,U] = ode23s(F,tSpan,U(end,:)' + ICVals(:,ik));   % add noise

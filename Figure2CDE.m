@@ -21,7 +21,7 @@ for i = 1:length(IMaxVals)      % For each input current values...
     I1fun = @(t) (t<=500).*IMaxVals(i);
     I = @(t) [I1fun(t); 0*t; 0*t; 0*t; 0*t; 0*t];       %Applied current (only) in V1
     
-    %% Connectivity matrix
+    %% Connectivity matrices
     W = [... %V1E  PPCE     PFCE         V1I     PPCI     PFCI
              1.0,   11.22,  1.29,       -2.3,    0,     0;...    % V1E
              4.57,  1.0,    10.57,       0,     -1.8,   0;...    % PPCE
@@ -40,7 +40,7 @@ for i = 1:length(IMaxVals)      % For each input current values...
     mu2I= 2;  nu2I =0.3;
     mu3I= 2;  nu3I =0.3;
     
-    % FIRING RATE FUNCTION
+    % Firing rate function
     fr = @(v,mu,nu) 1/(1+exp(-mu*(v-nu)));       
     S = @(v) [ fr(v(1),mu1E,nu1E);  fr(v(2),mu2E,nu2E); fr(v(3),mu3E,nu3E); fr(v(4),mu1E,nu1E); fr(v(5),mu2E,nu2E); fr(v(6),mu3E,nu3E)]; 
 
@@ -50,7 +50,8 @@ for i = 1:length(IMaxVals)      % For each input current values...
     tau = [tauE; tauI];
 
     %% Decay constants
-    betaE = [0.8; 0.3; 0.8]; betaI = [0.07; 0.1; 0.07];
+    betaE = [0.8; 0.3; 0.8]; 
+    betaI = [0.07; 0.1; 0.07];
     beta = [betaE; betaI];
 
     %% Right-hand side
