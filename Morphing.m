@@ -3,6 +3,7 @@
 % Code for network morphing:
 %   Change "alpha" and other morphing parameters to 
 %   modify the connection strengths
+%   and plot the resulting trajectories
 
 
 % Cleaning 
@@ -117,7 +118,7 @@ for ik = 1:length(ICVals)     % FOR EVERY RANDOM INITIAL CONDITION ...
 
     %% Time step
     u0 = [0. 0. 0. 0. 0. 0.];
-    tSpan = [-50 0];                    
+    tSpan = [-500 0];                    
     [t,U] = ode23s(F,tSpan,u0);           
 
     tSpan = [0:1:1500];
